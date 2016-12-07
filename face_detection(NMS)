@@ -56,7 +56,7 @@ end;
 % I7 = imread('/Users/Joe/Documents/MSRT/cv_project/1118/testimg/1.pgm');% put the detection pic in any area of the background pic
 I8 = I3; %I8 is used to draw the bounding box 
 I3 = rgb2gray(I3);
-% [m,n] = size(I3);
+  [m,n] = size(I3);
 % [m1,n1] = size(I7);
 % it1 = randi([1,m-m1+1]);
 % it2 = randi([1,n-n1+1]);
