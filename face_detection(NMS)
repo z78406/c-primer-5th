@@ -51,11 +51,13 @@ end;
 
 % % 3. construct searching method
 
- I3 = imread('test_img1.jpg');
- Res_img = I3; %Res_img is used to draw the bounding box 
+ I3 = imread('test_img3.jpg');
+ Res_img = imresize(I3,[600,800]); %Res_img is used to draw the bounding box 
 % I3 = imread('/Users/Joe/Documents/MSRT/cv_project/1028/boat.bmp'); 
 % I8 = imread('/Users/Joe/Documents/MSRT/cv_project/1118/testimg/1.pgm');% put the detection pic in any area of the background pic
-I4 = rgb2gray(I3);
+
+
+I4 = rgb2gray(Res_img);
 [m,n] = size(I4);
 % [m1,n1] = size(I8);
 % it1 = randi([1,m-m1+1]);
@@ -69,7 +71,7 @@ count = 0; %record the loop times
 d=1;
 a2 = cell(100,2000);
 b2 = zeros(100,2000);
-% while (m>40&&n>40) 
+while (m>40&&n>40) 
 
    I5 = integralImage(I4); %get the integral image 
    I6 = I5(2:end,2:end);   %get rid of the first row and column which are all zero
@@ -107,11 +109,11 @@ b2 = zeros(100,2000);
    c2 = b2(1:100,1:j-1)';    
    c3 = (pdist2(c1,c2));    %pdist2 is used to get the distance between any two vectors
    c4 = fix(mean(c3));        
-   ind= (find(c4<14000));   %set the threshould;
+   ind= (find(c4<13200));   %set the threshould;
    
    scores = zeros(1,size(ind,2));
    i = 1:size(ind,2);
-   scores(1,i) = 1-(14000-c4(ind))/14000;
+   scores(1,i) = 1-(13200-c4(ind))/13200;
   
    
    [iy1,ix1] = ind2sub([(ix-1)/20+1,(iy-1)/20+1],ind);
@@ -123,17 +125,29 @@ b2 = zeros(100,2000);
    bounding_box(:,3) = (rectx+39)';
    bounding_box(:,4) = (recty+39)';
    bounding_box(:,5) = scores';
-   nms_res = nms(bounding_box,0.1,'Min'); 
+   nms_res = nms(bounding_box,0.05,'Min');
+   a = size(nms_res,1);
+   if ~a == 0;
+   i = 1:a;
    
-  
-   imshow(Res_img);          % show results method 
-   for i = 1:size(nms_res,1)
-   Res_img = rectangle('Position',[fix(bounding_box(nms_res(i),1)),fix(bounding_box(nms_res(i),2)),40*1.2^count,40*1.2^count],'EdgeColor','r');
+   AG_res(i,count+1) = nms_res(i,1);
+   end;
+   b = size(bounding_box,1);
+   if ~b == 0;
+   i = 1:b;
+   
+   Save_box(i,count*5+1:count*5+5) = bounding_box(i,1:5);
    end;
 
+  
+%    imshow(Res_img);          % show results method 1 ( for single loop)
+%    for i = 1:size(nms_res,1)
+%    Res_img = rectangle('Position',[fix(bounding_box(nms_res(i),1)),fix(bounding_box(nms_res(i),2)),40*1.2^count,40*1.2^count],'EdgeColor','r');
+%    end;
 
 
-%    u = size(nms_res,1);       % show results method2
+
+%    u = size(nms_res,1);       % show results method2 (grayscale img)
 %    for i = 1:u
 %    Res_img(fix(rectx(i)*1.2^count),fix(recty(i)*1.2^count):fix(recty(i)*1.2^count+40*1.2^count-1))=0;
 %    Res_img(fix(rectx(i)*1.2^count):fix(rectx(i)*1.2^count+40*1.2^count-1),fix(recty(i)*1.2^count))=0;
@@ -144,12 +158,25 @@ b2 = zeros(100,2000);
 
 
       
-%    m = fix(m/1.2);
-%    n = fix(n/1.2);
-%    I4 = imresize(I4,[m,n]);
-%    count = count+1;
-%   
-% end;
+   m = fix(m/1.2);
+   n = fix(n/1.2);
+   I4 = imresize(I4,[m,n]);
+   count = count+1;
+  
+end;
+imshow(Res_img);
+[m,n] = size(AG_res);
+for i = 1:m
+    for j = 1:n
+        if ~AG_res(i,j) == 0
+       
+            Res_img = rectangle('Position',[fix(Save_box(AG_res(i,j),(j-1)*5+1)),fix(Save_box(AG_res(i,j),(j-1)*5+2)),40*1.2^(j-1),40*1.2^(j-1)],'EdgeColor','r');
+    
+        end;    
+    end; 
+end;
+
+
 
 
 
