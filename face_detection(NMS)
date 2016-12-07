@@ -52,28 +52,28 @@ end;
 % % 3. construct searching method
 
  I3 = imread('test_img1.jpg');
+ Res_img = I3; %Res_img is used to draw the bounding box 
 % I3 = imread('/Users/Joe/Documents/MSRT/cv_project/1028/boat.bmp'); 
-% I7 = imread('/Users/Joe/Documents/MSRT/cv_project/1118/testimg/1.pgm');% put the detection pic in any area of the background pic
-I8 = I3; %I8 is used to draw the bounding box 
-I3 = rgb2gray(I3);
-  [m,n] = size(I3);
-% [m1,n1] = size(I7);
+% I8 = imread('/Users/Joe/Documents/MSRT/cv_project/1118/testimg/1.pgm');% put the detection pic in any area of the background pic
+I4 = rgb2gray(I3);
+[m,n] = size(I4);
+% [m1,n1] = size(I8);
 % it1 = randi([1,m-m1+1]);
 % it2 = randi([1,n-n1+1]);
-% I3(it1:it1+m1-1,it2:it2+n1-1) = I7(1:m1,1:n1);
-% imshow(I3);
+% I4(it1:it1+m1-1,it2:it2+n1-1) = I8(1:m1,1:n1);
+% imshow(I4);
 
 
 
 count = 0; %record the loop times
 d=1;
-a2 = cell(100,5000);
-b2 = zeros(100,5000);
-while (m>40&&n>40) 
+a2 = cell(100,2000);
+b2 = zeros(100,2000);
+% while (m>40&&n>40) 
 
-   I4 = integralImage(I3); %get the integral image 
-   I5 = I4(2:end,2:end);   %get rid of the first row and column which are all zero
-   [m,n] = size(I5);       
+   I5 = integralImage(I4); %get the integral image 
+   I6 = I5(2:end,2:end);   %get rid of the first row and column which are all zero
+   [m,n] = size(I6);       
    subm = 5;
    j = 1;
    
@@ -86,10 +86,10 @@ while (m>40&&n>40)
 %                iym = iy+40-1;   
 %                ix1 = randi([ix,ixm-subm+1]);
 %                iy1 = randi([iy,iym-subm+1]);
-%                I6  = I5(ix1:ix1+subm-1,iy1:iy1+subm-1);
-               I6 = I5(ix+Point_Locx(i,k)-1:(ix+Point_Locx(i,k)+subm-1-1),iy+Point_Locy(i,k)-1:(iy+Point_Locy(i,k)+subm-1-1));
+%                I7  = I6(ix1:ix1+subm-1,iy1:iy1+subm-1);
+               I7 = I6(ix+Point_Locx(i,k)-1:(ix+Point_Locx(i,k)+subm-1-1),iy+Point_Locy(i,k)-1:(iy+Point_Locy(i,k)+subm-1-1));
 
-               a2{i,j}(1,k) = I6(5,5)-I6(5,1)-I6(1,5)+I6(1,1);%get the sum valuse for each one pair of ROI 
+               a2{i,j}(1,k) = I7(5,5)-I7(5,1)-I7(1,5)+I7(1,1);%get the sum valuse for each one pair of ROI 
            
            
                end;
@@ -125,36 +125,33 @@ while (m>40&&n>40)
    bounding_box(:,5) = scores';
    nms_res = nms(bounding_box,0.1,'Min'); 
    
-   
-   imshow(I8);
+  
+   imshow(Res_img);          % show results method 
    for i = 1:size(nms_res,1)
-   I8 = rectangle('Position',[fix(bounding_box(nms_res(i),1)),fix(bounding_box(nms_res(i),2)),40*1.2^count,40*1.2^count],'EdgeColor','r');
+   Res_img = rectangle('Position',[fix(bounding_box(nms_res(i),1)),fix(bounding_box(nms_res(i),2)),40*1.2^count,40*1.2^count],'EdgeColor','r');
    end;
 
 
 
-%    u = size(nms_res,1);
+%    u = size(nms_res,1);       % show results method2
 %    for i = 1:u
-%    I8(fix(rectx(i)*1.2^count),fix(recty(i)*1.2^count):fix(recty(i)*1.2^count+40*1.2^count-1))=0;
-%    I8(fix(rectx(i)*1.2^count):fix(rectx(i)*1.2^count+40*1.2^count-1),fix(recty(i)*1.2^count))=0;
-%    I8(fix(rectx(i)*1.2^count+40*1.2^count-1),fix(recty(i)*1.2^count):fix(recty(i)*1.2^count+40*1.2^count-1))=0;
-%    I8(fix(rectx(i)*1.2^count):fix(rectx(i)*1.2^count+40*1.2^count-1),fix(recty(i)*1.2^count+40*1.2^count-1))=0;
+%    Res_img(fix(rectx(i)*1.2^count),fix(recty(i)*1.2^count):fix(recty(i)*1.2^count+40*1.2^count-1))=0;
+%    Res_img(fix(rectx(i)*1.2^count):fix(rectx(i)*1.2^count+40*1.2^count-1),fix(recty(i)*1.2^count))=0;
+%    Res_img(fix(rectx(i)*1.2^count+40*1.2^count-1),fix(recty(i)*1.2^count):fix(recty(i)*1.2^count+40*1.2^count-1))=0;
+%    Res_img(fix(rectx(i)*1.2^count):fix(rectx(i)*1.2^count+40*1.2^count-1),fix(recty(i)*1.2^count+40*1.2^count-1))=0;
 %    end;
-% 
-%    
-%          
-   m = fix(m/1.2);
-   n = fix(n/1.2);
-   I3 = imresize(I3,[m,n]);
-   count = count+1;
-end;
-% 
-% imshow(I8);
+%  imshow(Res_img);
 
-% 
+
+      
+%    m = fix(m/1.2);
+%    n = fix(n/1.2);
+%    I4 = imresize(I4,[m,n]);
+%    count = count+1;
 %   
-% 
-%     
+% end;
+
+
 
 
 
